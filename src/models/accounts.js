@@ -3,9 +3,9 @@ const {accounts, transactions} = require("../../db")
 const { fillTransactions, removeTransactions } = require("../../utility");
 
 function getAll() {
-  let result = accounts.map(function(acct, i) {
-    const fill = Object.assign({}, accounts[i]);
-    fill.transactions = fillTransactions(accounts[i].transactions);
+  let result = accounts().map(function(acct, i) {
+    const fill = Object.assign({}, accounts()[i]);
+    fill.transactions = fillTransactions(accounts()[i].transactions);
     return fill;
   });
 
@@ -13,7 +13,7 @@ function getAll() {
 }
 
 function getOne(id) {
-  const account = accounts.find(element => element.id === id);
+  const account = accounts().find(element => element.id === id);
 
   if (!account)
     return { error : `An account with the id ${id} could not be found` };
@@ -35,13 +35,13 @@ function create(newAccount) {
   else {
     newAccount.id = uuid();
     newAccount.transactions = [];
-    accounts.push(newAccount);
+    accounts().push(newAccount);
     return newAccount;
   }
 }
 
 function update(id, updatedAccount) {
-  const account = accounts.find(element => element.id === id);
+  const account = accounts().find(element => element.id === id);
 
   if (!account)
     return { error : `An account with the id ${id} could not be found.` };
@@ -57,12 +57,12 @@ function update(id, updatedAccount) {
 }
 
 function remove(id) {
-  const index = accounts.findIndex(element => element.id === id);
+  const index = accounts().findIndex(element => element.id === id);
 
   if (index < 0)
     return { error : `An account with the id ${id} could not be found.` };
   else {
-    const removed = accounts.splice(index, 1)[0];
+    const removed = accounts().splice(index, 1)[0];
     const removedTransactions = removed.transactions.slice(0);
     removed.transactions = removeTransactions(removedTransactions);
     return removed;

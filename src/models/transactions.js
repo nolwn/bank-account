@@ -1,5 +1,7 @@
 const uuid = require("uuid/v4");
-const {accounts, transactions} = require("../../db")
+const db = require("../../db");
+const accounts = db.accounts();
+const transactions = db.transactions();
 const { fillTransactions, removeTransactions } = require("../../utility");
 
 function getAll(aId) {

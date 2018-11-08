@@ -3,7 +3,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const db = require("../db/index.js");
 const accounts = require("./routes/accounts");
 const transactions = require("./routes/transactions");
 
