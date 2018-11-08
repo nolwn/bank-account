@@ -1,0 +1,18 @@
+{
+  "name": "bank-account",
+  "version": "1.0.0",
+  "description": "An api for tracking bank transactions",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "author": "Nolan Hellyer",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "uuid": "^3.3.2"
+  }
+}
