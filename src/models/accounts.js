@@ -1,5 +1,5 @@
 const uuid = require("uuid/v4");
-const {accounts, transactions} = require("../../db")
+const {accounts, transactions, writeAccounts, writeTransactions} = require("../../db")
 const { fillTransactions, removeTransactions } = require("../../utility");
 
 function getAll() {
@@ -33,15 +33,18 @@ function create(newAccount) {
       error : `New account could not be created. Missing: ${missing.join(", ")}`
     };
   else {
+    const update = accounts();
     newAccount.id = uuid();
     newAccount.transactions = [];
-    accounts().push(newAccount);
+    update.push(newAccount);
+    writeAccounts(update);
     return newAccount;
   }
 }
 
 function update(id, updatedAccount) {
-  const account = accounts().find(element => element.id === id);
+  const update = accounts();
+  const account = update.find(element => element.id === id);
 
   if (!account)
     return { error : `An account with the id ${id} could not be found.` };
@@ -51,6 +54,8 @@ function update(id, updatedAccount) {
 
     let result = Object.assign({}, account);
     result.transactions = fillTransactions(account.transactions);
+
+    writeAccounts(update);
 
     return result;
   }
@@ -62,9 +67,11 @@ function remove(id) {
   if (index < 0)
     return { error : `An account with the id ${id} could not be found.` };
   else {
-    const removed = accounts().splice(index, 1)[0];
+    const update = accounts();
+    const removed = update.splice(index, 1)[0];
     const removedTransactions = removed.transactions.slice(0);
     removed.transactions = removeTransactions(removedTransactions);
+    writeAccounts(update);
     return removed;
   }
 }

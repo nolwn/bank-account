@@ -12,7 +12,7 @@ app.use("/accounts", accounts);
 app.use("/accounts/", transactions);
 
 app.use((req, res, next) => {
-  next({status : 404, message : "Path not found."});
+  next({status : 404, error : "Path not found."});
 });
 
 app.use((err, req, res, next) => {

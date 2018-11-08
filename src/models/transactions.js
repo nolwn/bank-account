@@ -1,7 +1,6 @@
 const uuid = require("uuid/v4");
-const db = require("../../db");
-const accounts = db.accounts();
-const transactions = db.transactions();
+const { accounts, transactions, writeAccounts, writeTransactions } =
+  require("../../db");
 const { fillTransactions, removeTransactions } = require("../../utility");
 
 function getAll(aId) {
@@ -31,8 +30,10 @@ function getOne(aId, tId) {
 }
 
 function create(aId, newTransaction) {
+  const updatedAccounts = accounts();
+  const updatedTransactions = transactions();
   const parameters = ["amount", "pending", "title"];
-  const account = accounts.find(acct => acct.id === aId);
+  const account = updatedAccounts.find(acct => acct.id === aId);
   const missing = parameters.filter(property => !newTransaction[property]);
 
   if (!account)
@@ -48,15 +49,21 @@ function create(aId, newTransaction) {
   }
   else {
     newTransaction.id = uuid();
-    transactions.push(newTransaction);
     account.transactions.push(newTransaction.id);
+    updatedTransactions.push(newTransaction);
+
+    writeAccounts(updatedAccounts);
+    writeTransactions(updatedTransactions);
+
     return newTransaction;
   }
 }
 
 function update(aId, tId, updatedTransaction) {
-  const account = accounts.find(acct => acct.id === aId);
-  const transaction = transactions.find(trans => trans.id === tId);
+  const updatedAccounts = accounts();
+  const updatedTransactions = transactions();
+  const account = updatedAccounts.find(acct => acct.id === aId);
+  const transaction = updatedTransactions.find(trans => trans.id === tId);
 
   if (!account)
     return { error : `An account with the id ${aId} could not be found.` };
@@ -70,13 +77,18 @@ function update(aId, tId, updatedTransaction) {
     for (let property in updatedTransaction)
       transaction[property] = updatedTransaction[property];
 
+    writeAccounts(updatedAccounts);
+    writeTransactions(updatedTransactions);
+
     return transaction;
   }
 }
 
 function remove(aId, tId) {
-  const account = accounts.find(acct => acct.id === aId);
-  const index = transactions.findIndex(trans => trans.id === tId);
+  const updatedAccounts = accounts();
+  const updatedTransactions = transactions();
+  const account = updatedAccounts.find(acct => acct.id === aId);
+  const index = updatedTransactions.findIndex(trans => trans.id === tId);
 
   if (!account)
     return { error : `An account with the id ${aId} could not be found.` };
@@ -85,8 +97,12 @@ function remove(aId, tId) {
        `transaction with the id ${tId}` };
   else {
     const acctIndex = account.transactions.indexOf(tId);
-    const result = transactions.splice(index, 1);
+    const result = updatedTransactions.splice(index, 1);
     account.transactions.splice(acctIndex, 1);
+
+    writeAccounts(updatedAccounts);
+    writeAccounts(updatedTransactions)
+
     return result;
   }
 }
