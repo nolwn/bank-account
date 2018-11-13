@@ -4,8 +4,8 @@ function getAll(req, res, next) {
   const data = model.getAll(req.params.aId);
 
   if (data.error) {
-    data.status(404);
-    next(data);
+    // data.status = 404;
+    next({...data, status:404});
   }
   else
     res.status(200).send(data);
