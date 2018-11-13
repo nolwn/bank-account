@@ -9,7 +9,7 @@ const transactions = require("./routes/transactions");
 app.disable("x-powered-by");
 app.use(bodyParser.json());
 app.use("/accounts", accounts);
-app.use("/accounts/", transactions);
+app.use("/accounts/:aId", transactions);
 
 app.use((req, res, next) => {
   next({status : 404, error : "Path not found."});

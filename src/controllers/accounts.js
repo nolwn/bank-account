@@ -1,5 +1,9 @@
 const model = require("../models/accounts");
 
+function decorateError(error, status){
+  return {...error, status}
+}
+
 function getAll(req, res, next) {
   const data = model.getAll();
 
@@ -13,15 +17,15 @@ function getOne(req, res, next) {
   const data = model.getOne(req.params.id);
 
   if (data.error) {
-    data.status = 404;
-    next(data);
+    next(decorateError(data, 404));
   }
   else
     res.status(200).send(data);
 }
 
 function create(req, res, next) {
-  const data = model.create(req.body);
+  const { name, description, branch } = req.body
+  const data = model.create(name, description, branch);
 
   if (data.error) {
     data.status = 400;

@@ -1,12 +1,14 @@
 const uuid = require("uuid/v4");
-const {accounts, transactions, writeAccounts, writeTransactions} = require("../../db")
+const { accounts, transactions, writeAccounts, writeTransactions } = require("../../db")
 const { fillTransactions, removeTransactions } = require("../../utility");
 
 function getAll() {
-  let result = accounts().map(function(acct, i) {
-    const fill = Object.assign({}, accounts()[i]);
-    fill.transactions = fillTransactions(accounts()[i].transactions);
-    return fill;
+  let result = accounts().map(function(acct) {
+    const transactions = fillTransactions(acct.transactions)
+    return {...acct, transactions }
+    // const fill = Object.assign({}, accounts()[i]);
+    // fill.transactions = fillTransactions(accounts()[i].transactions);
+    // return fill;
   });
 
   return result;
@@ -18,15 +20,19 @@ function getOne(id) {
   if (!account)
     return { error : `An account with the id ${id} could not be found` };
   else {
-    let result = Object.assign({}, account);
-    result.transactions = fillTransactions(account.transactions);
-    return result;
+    // let result = Object.assign({}, account);
+    // result.transactions = fillTransactions(account.transactions);
+    const transactions = fillTransactions(acct.transactions)
+    return {...account, transactions }
   }
 }
 
-function create(newAccount) {
+function create(name, description, branch) {
   const properties = ["branch", "description", "name"];
   const missing = properties.filter(property => !newAccount[property]);
+
+  arguments
+  
 
   if (missing.length > 0)
     return {
@@ -34,11 +40,19 @@ function create(newAccount) {
     };
   else {
     const update = accounts();
-    newAccount.id = uuid();
-    newAccount.transactions = [];
-    update.push(newAccount);
+
+    const acc = {
+      id:uuid(),
+      transactions:[],
+      branch: newAccount.branch,
+      description: newAccount.description,
+      name: newAccount.name
+    }
+
+    update.push(acc);
     writeAccounts(update);
-    return newAccount;
+
+    return acc;
   }
 }
 
